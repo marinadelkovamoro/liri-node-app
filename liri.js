@@ -1,5 +1,5 @@
 
-var axios = require("axios");
+
 // require("dotenv").config();
 
 // // Add the code required to import the keys.js file and store it in a variable
@@ -13,29 +13,6 @@ var axios = require("axios");
 // spotify-this-song
 // movie-this
 // do-what-it-says
-
-var userCommand = process.argv[2];
-// var inquirer = require("inquirer");
-
-// inquirer
-//     .prompt([
-//         {
-//             type: "input",
-//             message: "Enter a command",
-//             name: "command"
-//         }
-//     ])
-//     .then(function (inquirerResponse) {
-//         console.log(inquirerResponse.command);
-//         //ENTER WHAT NEEDS TO HAPPEN HERE AFTER THE USER INPUTS THEIR COMMAND 
-//         // geocoder.geocode(inquirerResponse.name, function (err, data) {
-//         // // Then console log the result and stringify it.
-//         // console.log(JSON.stringify(data, null, 2));
-//         // });
-//     })
-
-
-
 
 // axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp")
 //     .then(function (response) {
@@ -62,32 +39,39 @@ var userCommand = process.argv[2];
 //     });
 
 
+var userCommand = process.argv[2];
 
-var movieName = process.argv[3];
-
-axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy")
-    .then(function (response) {
-        // console.log(response);
-        // IF node liri.js movie-this '<movie name here>'
-        // THEN it will output the following information to your terminal/bash window:
-        function movieOutput() {
-            console.log("The title of the movie is " + response.data.Title);
-            console.log("The year this movie was released is " + response.data.Year);
-            console.log("IMDB rating of this movie: " + response.data.imdbRating);
-            console.log("The Rotten Tomatoes Rating of the movie is: " + response.data.Ratings[0]);
-            console.log("The country where the movie was produced is: " + response.data.Country);
-            console.log("Language(s) of the movie: " + response.data.Language);
-            console.log("Plot: " + response.data.Plot);
-            console.log("Actors in the movie: " + response.data.Actors);
-        }
-        if (userCommand === "movie-this") {
-            movieOutput();
+if (userCommand === "movie-this") {
+    
+    var movieName = process.argv[3];
+    
+    var axios = require("axios");
+    
+    axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy")
+        .then(function (response) {
+            // console.log(response);
+            // IF node liri.js movie-this '<movie name here>'
+            // THEN it will output the following information to your terminal/bash window:
+            function movieOutput() {
+                console.log("The title of the movie is " + response.data.Title);
+                console.log("The year this movie was released is " + response.data.Year);
+                console.log("IMDB rating of this movie: " + response.data.imdbRating);
+                console.log("The Rotten Tomatoes Rating of the movie is: " + response.data.Ratings[0]);
+                console.log("The country where the movie was produced is: " + response.data.Country);
+                console.log("Language(s) of the movie: " + response.data.Language);
+                console.log("Plot: " + response.data.Plot);
+                console.log("Actors in the movie: " + response.data.Actors);
+            }
             // If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-        } else {
-            movieName = "Mr. Nobody";
-            movieOutput();
-        }
-    });
+            if (movieName === "") {
+                movieName = "Mr. Nobody"
+                movieOutput();
+            } else {
+                movieOutput();
+            }
+        });
+ 
+}
 
 
 // node liri.js do-what-it-says
