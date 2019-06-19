@@ -1,4 +1,5 @@
 require("dotenv").config();
+var fs = require('fs');
 
 // pull the dependencies 
 const axios = require("axios");
@@ -6,6 +7,35 @@ const Spotify = require("node-spotify-api");
 const keys = require("./keys.js");
 
 var userCommand = process.argv[2];
+
+const spotify = new Spotify(keys.spotify);
+var song = process.argv.slice(3).join(" ");
+function spotifySong() {
+  spotify.search({ type: 'track', query: song }, function (err, data) {
+    console.log("I am spotify and working");
+    if (err) {
+      return console.log('Error occurred: ' + err);
+    }
+    // console.log(data.tracks.items);
+
+    var tracks = data.tracks.items;
+    for (var i = 0; i < tracks.length; i++) {
+      // display song's name
+      const songName = tracks[i].name;
+      console.log("\nSong name: " + songName);
+      // display artists
+      const artistName = tracks[i].album.artists[0].name;
+      console.log("Artist name: " + artistName);
+      // display a preview link of the song from Spotify
+      const previewLink = tracks[i].preview_url;
+      console.log("Here is a preview link: " + previewLink);
+      // display the album that the song is from
+      const album = tracks[i].album.name;
+      console.log("Album: " + album);
+    }
+  });
+}
+
 
 if (userCommand === "movie-this") {
   var movieName = process.argv.slice(3).join(" ");
@@ -39,36 +69,16 @@ if (userCommand === "movie-this") {
       movieOutput();
     });
 } else if (userCommand === "spotify-this-song") {
-  var song = process.argv.slice(3).join(" ");
+
   // If no song is provided then your program will default to "The Sign" by Ace of Base.
   if (!song) {
     song = "The Sign"
   }
 
-  const spotify = new Spotify(keys.spotify);
 
-  spotify.search({ type: 'track', query: song }, function (err, data) {
-    if (err) {
-      return console.log('Error occurred: ' + err);
-    }
-    // console.log(data.tracks.items);
 
-    var tracks = data.tracks.items;
-    for (var i = 0; i < tracks.length; i++) {
-      // display song's name
-      const songName = tracks[i].name;
-      console.log("\nSong name: " + songName);
-      // display artists
-      const artistName = tracks[i].album.artists[0].name;
-      console.log("Artist name: " + artistName);
-      // display a preview link of the song from Spotify
-      const previewLink = tracks[i].preview_url;
-      console.log("Here is a preview link: " + previewLink);
-      // display the album that the song is from
-      const album = tracks[i].album.name;
-      console.log("Album: " + album);
-    }
-  });
+
+  spotifySong(song);
 } else if (userCommand === "concert-this") {
   var artistName = process.argv.slice(3).join(" ");
 
@@ -85,7 +95,30 @@ if (userCommand === "movie-this") {
         console.log("Date: " + concert[i].datetime);
       }
     });
+} else if (userCommand === "do-what-it-says") {
+  // Using the fs Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
+  
+  // It should run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
+  var readSong = function(){
+    fs.readFile('random.txt', "utf8", function (error, data){
+    
+    console.log(data);
+    var output = data.split(",");
+    // console.log(output[1]);
+    if (output[0] === "spotify-this-song") {
+      song = output[1];
+      console.log(song);
+      spotifySong();
+    }
+   
+  });
 }
+ readSong();
+ 
+}
+
+ 
+
 
 
 
