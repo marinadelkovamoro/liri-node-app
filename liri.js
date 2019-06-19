@@ -8,6 +8,40 @@ const keys = require("./keys.js");
 
 var userCommand = process.argv[2];
 
+var fetchMovies = function () {
+  if (!movieName) {
+    movieName = "Mr. Nobody"
+  }
+  axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy")
+    .then(function (response) {
+      // console.log(response.data);
+      // IF node liri.js movie-this '<movie name here>'
+      // THEN it will output the following information to your terminal/bash window:
+      function movieOutput() {
+        const movie = response.data;
+        console.log("\nThe title of the movie is " + movie.Title);
+        console.log("The year this movie was released is " + movie.Year);
+        console.log("IMDB rating of this movie: " + movie.imdbRating);
+        console.log("The country where the movie was produced is: " + movie.Country);
+        console.log("Language(s) of the movie: " + movie.Language);
+        console.log("Plot: " + movie.Plot);
+        console.log("Actors in the movie: " + movie.Actors);
+        // add a line of code to check for Rotten Tomatoes rating - check if it exists in the object (OR if I can go to the API's docs and confirm that there is such a thing for each movie).
+
+
+        if (movie.Ratings[1]) {
+          const rottenTomatoesRating = movie.Ratings[1].Value;
+          console.log("The Rotten Tomatoes Rating of the movie is: " + rottenTomatoesRating);
+
+        } else {
+          console.log("Sorry, Rotten Tomatoes rating is not available for this movie")
+        }
+      }
+      movieOutput();
+    });
+
+}
+
 const spotify = new Spotify(keys.spotify);
 var song = process.argv.slice(3).join(" ");
 function spotifySong() {
@@ -41,33 +75,9 @@ if (userCommand === "movie-this") {
   var movieName = process.argv.slice(3).join(" ");
 
   // If the user doesn't type in a movie, the program will output data for the movie 'Mr. Nobody.'
-  if (!movieName) {
-    movieName = "Mr. Nobody"
-  }
-  axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy")
-    .then(function (response) {
-      // console.log(response.data);
-      // IF node liri.js movie-this '<movie name here>'
-      // THEN it will output the following information to your terminal/bash window:
-      function movieOutput() {
-        const movie = response.data;
-        console.log("\nThe title of the movie is " + movie.Title);
-        console.log("The year this movie was released is " + movie.Year);
-        console.log("IMDB rating of this movie: " + movie.imdbRating);
-        console.log("The country where the movie was produced is: " + movie.Country);
-        console.log("Language(s) of the movie: " + movie.Language);
-        console.log("Plot: " + movie.Plot);
-        console.log("Actors in the movie: " + movie.Actors);
-        // add a line of code to check for Rotten Tomatoes rating - check if it exists in the object (OR if I can go to the API's docs and confirm that there is such a thing for each movie).
-        const rottenTomatoesRating = movie.Ratings[1].Value;
-        if (rottenTomatoesRating) {
-          console.log("The Rotten Tomatoes Rating of the movie is: " + rottenTomatoesRating);
-        } else {
-          console.log("Sorry, Rotten Tomatoes rating is not available for this movie")
-        }
-      }
-      movieOutput();
-    });
+
+  fetchMovies();
+
 } else if (userCommand === "spotify-this-song") {
 
   // If no song is provided then your program will default to "The Sign" by Ace of Base.
@@ -97,27 +107,30 @@ if (userCommand === "movie-this") {
     });
 } else if (userCommand === "do-what-it-says") {
   // Using the fs Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
-  
+
   // It should run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
-  var readSong = function(){
-    fs.readFile('random.txt', "utf8", function (error, data){
-    
-    console.log(data);
-    var output = data.split(",");
-    // console.log(output[1]);
-    if (output[0] === "spotify-this-song") {
-      song = output[1];
-      console.log(song);
-      spotifySong();
-    }
-   
-  });
-}
- readSong();
- 
+  var readSong = function () {
+    fs.readFile('random.txt', "utf8", function (error, data) {
+
+      console.log(data);
+      var output = data.split(",");
+      // console.log(output[1]);
+      if (output[0] === "spotify-this-song") {
+        song = output[1];
+        console.log(song);
+        spotifySong();
+      } else if (output[0] === "movie-this") {
+        movieName = output[1];
+        fetchMovies();
+      }
+
+    });
+  }
+  readSong();
+
 }
 
- 
+
 
 
 
