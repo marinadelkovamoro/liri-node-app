@@ -8,4 +8,5 @@ LIRI will search Spotify for songs, Bands in Town for concerts, and OMDB for mov
 
 To retrieve the data that will power this app, requests will be sent to the Bands in Town, Spotify and OMDB APIs using the axios package. 
 
-![Image description]("images/image1.png)
+![GitHub Logo](/images/image1.png)
+Format: ![Alt Text](url)
