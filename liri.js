@@ -15,8 +15,6 @@ var fetchMovies = function () {
   axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy")
     .then(function (response) {
       // console.log(response.data);
-      // IF node liri.js movie-this '<movie name here>'
-      // THEN it will output the following information to your terminal/bash window:
       function movieOutput() {
         const movie = response.data;
         console.log("\nThe title of the movie is " + movie.Title);
@@ -26,44 +24,36 @@ var fetchMovies = function () {
         console.log("Language(s) of the movie: " + movie.Language);
         console.log("Plot: " + movie.Plot);
         console.log("Actors in the movie: " + movie.Actors);
-        // add a line of code to check for Rotten Tomatoes rating - check if it exists in the object (OR if I can go to the API's docs and confirm that there is such a thing for each movie).
-
-
+        //check if Rotten Tomatoes rating exists for the movie
         if (movie.Ratings[1]) {
           const rottenTomatoesRating = movie.Ratings[1].Value;
           console.log("The Rotten Tomatoes Rating of the movie is: " + rottenTomatoesRating);
-
         } else {
           console.log("Sorry, Rotten Tomatoes rating is not available for this movie")
         }
       }
       movieOutput();
     });
-
 }
 
 const spotify = new Spotify(keys.spotify);
 var song = process.argv.slice(3).join(" ");
+
 function spotifySong() {
   spotify.search({ type: 'track', query: song }, function (err, data) {
-    console.log("I am spotify and working");
+    // console.log("Spotify is working");
     if (err) {
       return console.log('Error occurred: ' + err);
     }
     // console.log(data.tracks.items);
-
     var tracks = data.tracks.items;
     for (var i = 0; i < tracks.length; i++) {
-      // display song's name
       const songName = tracks[i].name;
       console.log("\nSong name: " + songName);
-      // display artists
       const artistName = tracks[i].album.artists[0].name;
       console.log("Artist name: " + artistName);
-      // display a preview link of the song from Spotify
       const previewLink = tracks[i].preview_url;
       console.log("Here is a preview link: " + previewLink);
-      // display the album that the song is from
       const album = tracks[i].album.name;
       console.log("Album: " + album);
     }
