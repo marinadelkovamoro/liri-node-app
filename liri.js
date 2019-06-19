@@ -2,14 +2,13 @@ require("dotenv").config();
 
 // pull the dependencies 
 const axios = require("axios");
-const Spotify = require('node-spotify-api');
+const Spotify = require("node-spotify-api");
 const keys = require("./keys.js");
 
 var userCommand = process.argv[2];
 
 if (userCommand === "movie-this") {
-
-  var movieName = process.argv[3];
+  var movieName = process.argv.slice(3).join(" ");
 
   // If the user doesn't type in a movie, the program will output data for the movie 'Mr. Nobody.'
   if (!movieName) {
@@ -17,35 +16,34 @@ if (userCommand === "movie-this") {
   }
   axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy")
     .then(function (response) {
-      console.log(response.data);
+      // console.log(response.data);
       // IF node liri.js movie-this '<movie name here>'
       // THEN it will output the following information to your terminal/bash window:
       function movieOutput() {
-        console.log("The title of the movie is " + response.data.Title);
-        console.log("The year this movie was released is " + response.data.Year);
-        console.log("IMDB rating of this movie: " + response.data.imdbRating);
-        // add a line of code to check for Rotten Tomatoes rating - if it exists in the object OR I can go to the API's docs and see if there is such thing for each movie, etc.
-        console.log("The Rotten Tomatoes Rating of the movie is: " + response.data.Ratings[1].Value);
-        console.log("The country where the movie was produced is: " + response.data.Country);
-        console.log("Language(s) of the movie: " + response.data.Language);
-        console.log("Plot: " + response.data.Plot);
-        console.log("Actors in the movie: " + response.data.Actors);
+        const movie = response.data;
+        console.log("\nThe title of the movie is " + movie.Title);
+        console.log("The year this movie was released is " + movie.Year);
+        console.log("IMDB rating of this movie: " + movie.imdbRating);
+        console.log("The country where the movie was produced is: " + movie.Country);
+        console.log("Language(s) of the movie: " + movie.Language);
+        console.log("Plot: " + movie.Plot);
+        console.log("Actors in the movie: " + movie.Actors);
+        // add a line of code to check for Rotten Tomatoes rating - check if it exists in the object (OR if I can go to the API's docs and confirm that there is such a thing for each movie).
+        const rottenTomatoesRating = movie.Ratings[1].Value;
+        if (rottenTomatoesRating) {
+          console.log("The Rotten Tomatoes Rating of the movie is: " + rottenTomatoesRating);
+        } else {
+          console.log("Sorry, Rotten Tomatoes rating is not available for this movie")
+        }
       }
       movieOutput();
     });
-
-} else if (userCommand === "concert-this") {
-  var artistName = process.argv[3];
-
-  axios.get("https://rest.bandsintown.com/artists/" + artistName + "/events?app_id=codingbootcamp")
-    .then(function (response) {
-      console.log(response)
-      // Name of the venue
-      // Venue location
-      // Date of the Event (use moment to format this as "MM/DD/YYYY")
-    });
 } else if (userCommand === "spotify-this-song") {
   var song = process.argv.slice(3).join(" ");
+  // If no song is provided then your program will default to "The Sign" by Ace of Base.
+  if (!song) {
+    song = "The Sign"
+  }
 
   const spotify = new Spotify(keys.spotify);
 
@@ -53,7 +51,7 @@ if (userCommand === "movie-this") {
     if (err) {
       return console.log('Error occurred: ' + err);
     }
-    console.log(data.tracks.items);
+    // console.log(data.tracks.items);
 
     var tracks = data.tracks.items;
     for (var i = 0; i < tracks.length; i++) {
@@ -71,41 +69,35 @@ if (userCommand === "movie-this") {
       console.log("Album: " + album);
     }
   });
+} else if (userCommand === "concert-this") {
+  var artistName = process.argv.slice(3).join(" ");
+
+  axios.get("https://rest.bandsintown.com/artists/" + artistName + "/events?app_id=codingbootcamp")
+    .then(function (response) {
+      // console.log(response.data);
+      var concert = response.data;
+      for (var i = 0; i < concert.length; i++) {
+        // Name of the venue
+        console.log("\nVenue name: " + concert[i].venue.name);
+        // Venue location
+        console.log("Location: " + concert[i].venue.city);
+        // Date of the Event (use moment to format this as "MM/DD/YYYY")
+        console.log("Date: " + concert[i].datetime);
+      }
+    });
 }
 
 
-// // You should then be able to access your keys information like so
-// var spotify = new Spotify(keys.spotify);
 
-// Make it so liri.js can take in one of the following commands:
-// concert-this
-// spotify-this-song
-// movie-this
-// do-what-it-says
 
-// axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp")
-//     .then(function (response) {
-//         console.log(response.data);
 
-//         // IF node liri.js concert-this <artist/band name here>
-//         // THEN THE APP SHOULD RETURN THIS DATA FROM THE API: Name of the venue, Venue location, Date of the Event (use moment to format this as "MM/DD/YYYY")
-//         if (userCommand === "concert-this") {
-//             console.log(response.data.VENUENAME, response.data.VENUELOVATION, response.data.DATEOFEVENT);
-//         }
-//         // IF node liri.js spotify-this-song '<song name here>'
-//         // THEN it will show the following information about the song in your terminal/bash window
-//         // Artist(s)
-//         // The song's name
-//         // A preview link of the song from Spotify
-//         // The album that the song is from
-//         if (userCommand === "spotify-this-song '<song name>'") {
-//             console.log(response.data.ARTIST, response.data.SONGNAME, response.data.PREVIEWLINK, response.data.ALBUM);
-//         }
-//         // If no song is provided then your program will default to "The Sign" by Ace of Base.
-//         if (userCommand === "") {
-//             console.log(response.data.TheSign, response.data.AceOfBase);
-//         }
-//     });
+
+
+
+
+
+
+
 
 
 
@@ -133,21 +125,17 @@ if (userCommand === "movie-this") {
 //     if (err) {
 //         console.log(err);
 //     }
-
 //     // If no error is experienced, we'll log the phrase "Content Added" to our node console.
 //     else {
 //         console.log("Content Added!");
 //     }
-
 // });
 
 
 
 // // deposit an amount 
 // if (process.argv[2] === "deposit") {
-
 //     var text = ", " + process.argv[3];
-
 //     fs.appendFile("bank.txt", text, function (err) {
 //         if (err) {
 //             console.log(err);
