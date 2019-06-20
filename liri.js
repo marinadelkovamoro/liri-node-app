@@ -1,5 +1,8 @@
 require("dotenv").config();
-var fs = require('fs');
+const fs = require('fs');
+const moment = require('moment');
+
+
 
 // pull the dependencies 
 const axios = require("axios");
@@ -74,10 +77,6 @@ if (userCommand === "movie-this") {
   if (!song) {
     song = "The Sign"
   }
-
-
-
-
   spotifySong(song);
 } else if (userCommand === "concert-this") {
   var artistName = process.argv.slice(3).join(" ");
@@ -91,8 +90,10 @@ if (userCommand === "movie-this") {
         console.log("\nVenue name: " + concert[i].venue.name);
         // Venue location
         console.log("Location: " + concert[i].venue.city);
-        // Date of the Event (use moment to format this as "MM/DD/YYYY")
-        console.log("Date: " + concert[i].datetime);
+        // Display the Date of the Event (use moment to format this as "MM/DD/YYYY")
+        var date = moment(concert[i].datetime);
+        var formattedDate = date.format('YYYY MM DD');
+        console.log("Date: " + formattedDate);
       }
     });
 } else if (userCommand === "do-what-it-says") {
